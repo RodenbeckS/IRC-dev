@@ -12,13 +12,15 @@ public class ReadThread extends Thread {
     private BufferedReader reader;
     private Socket socket;
     private Client client;
+    protected boolean quit;
  
     public ReadThread(Socket socket, Client client) {
         this.socket = socket;
         this.client = client;
+        this.quit = false;
  
         try {
-            InputStream input = socket.getInputStream();
+            InputStream input = this.socket.getInputStream();
             reader = new BufferedReader(new InputStreamReader(input));
         } catch (IOException ex) {
             System.out.println("Error getting input stream: " + ex.getMessage());
@@ -27,7 +29,7 @@ public class ReadThread extends Thread {
     }
  
     public void run() {
-        while (true) {
+        while (!quit) {
             try {
                 String response = reader.readLine();
                 System.out.println("\n" + response);
@@ -37,9 +39,9 @@ public class ReadThread extends Thread {
                     System.out.print("[" + client.getUserName() + "]: ");
                 }
             } catch (IOException ex) {
-                System.out.println("Error reading from server: " + ex.getMessage());
-                ex.printStackTrace();
-                break;
+                //System.out.println("Error reading from server: " + ex.getMessage());
+                //ex.printStackTrace();
+                quit = true;
             }
         }
     }

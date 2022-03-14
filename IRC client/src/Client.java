@@ -33,7 +33,7 @@ public class Client {
         }
  
     }
- 
+
     void setUserName(String userName) {
         this.userName = userName;
     }
@@ -41,14 +41,21 @@ public class Client {
     String getUserName() {
         return this.userName;
     }
- 
+
  
     public static void main(String[] args) {
-        if (args.length < 2) return;
- 
-        String hostname = args[0];
-        int port = Integer.parseInt(args[1]);
- 
+        String hostname;
+        int port;
+        if (args.length < 2) {
+            Console console = System.console();
+            hostname = console.readLine("\nEnter the IP address of the destination server: ");
+            String temp = console.readLine("\nEnter the port number to connect on: ");
+            port = Integer.parseInt(temp);
+        }
+        else{
+            hostname = args[0];
+            port = Integer.parseInt(args[1]);
+        }
         Client client = new Client(hostname, port);
         client.execute();
     }

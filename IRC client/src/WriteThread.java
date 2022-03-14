@@ -35,6 +35,7 @@ public class WriteThread extends Thread {
         writer.println(userName);
  
         String text;
+        System.out.println("Enter a message to chat, or type '/help' for commands.\n");
  
         do {
             text = console.readLine("[" + userName + "]: ");
@@ -45,7 +46,6 @@ public class WriteThread extends Thread {
         try {
             socket.close();
         } catch (IOException ex) {
- 
             System.out.println("Error writing to server: " + ex.getMessage());
         }
     }

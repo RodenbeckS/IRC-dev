@@ -38,15 +38,18 @@ public class Server {
     }
  
     public static void main(String[] args) {
+        int port;
         if (args.length < 1) {
-            System.out.println("Syntax: java Server <port-number>");
-            System.exit(0);
+            Console console = System.console();
+            String input = console.readLine("\nEnter the port number for the server: ");
+            port = Integer.parseInt(input);
+
+        }else{
+            port = Integer.parseInt(args[0]);
         }
- 
-        int port = Integer.parseInt(args[0]);
- 
         Server server = new Server(port);
         server.execute();
+        
     }
  
     /**
