@@ -11,6 +11,7 @@ public class Server {
     private int port;
     private Set<String> userNames = new HashSet<>();
     private Set<ClientThread> ClientThreads = new HashSet<>();
+    private Set<Group> groups = new HashSet<>();
  
     public Server(int port) {
         this.port = port;
@@ -62,6 +63,73 @@ public class Server {
             }
         }
     }
+
+    private Group getGroup(String group){
+        for (Group aGroup : groups){
+            if(aGroup.name == group){
+                return aGroup;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Takes a group name, adds it to the list of groups, and adds the user to that group.
+     */
+    void makeGroup(String group, ClientThread user){
+        this.groups.add(new Group(group, user));
+    }
+
+    /**
+     * Adds the user to the selected group, if it exists.
+     */
+    void joinGroup(String group, ClientThread user){
+        Group target = getGroup(group);
+        if(target == null){
+            user.sendMessage("Group does not exist.");
+            return;
+        }
+        target.members.add(user);
+    }
+
+    /**
+     * Removes the selected user from the selected group, if it exists.
+     */
+    void leaveGroup(String group, ClientThread user){
+        Group target = getGroup(group);
+        if(target == null){
+            user.sendMessage("Group does not exist.");
+            return;
+        }
+        target.members.remove(user);
+    }
+
+    /**
+     * Removes the group from the server entirely.
+     */
+    void removeGroup(String group, ClientThread user){
+        Group target = getGroup(group);
+        if(target == null){
+            user.sendMessage("Group does not exist.");
+            return;
+        }
+        groups.remove(target);
+    }
+    /**
+     * Broadcasts the message to all users in that group.
+     */
+    void groupMessage(String message, String group, ClientThread excludeUser) {
+        Group target = getGroup(group);
+        if(target == null){
+            excludeUser.sendMessage("Group does not exist.");
+            return;
+        }
+        for(ClientThread aUser : target.members){
+            if(aUser != excludeUser){
+                aUser.sendMessage("<" + group + "> " + message);
+            }
+        }
+    }
  
     /**
      * Stores username of the newly connected client.
@@ -90,5 +158,16 @@ public class Server {
      */
     boolean hasUsers() {
         return !this.userNames.isEmpty();
+    }
+}
+
+
+class Group {
+    protected Set<ClientThread> members = new HashSet<>();
+    public String name;
+
+    Group(String name, ClientThread user){
+        this.name = name;
+        this.members.add(user);
     }
 }

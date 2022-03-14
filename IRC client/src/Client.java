@@ -3,7 +3,7 @@ import java.io.*;
  
 /**
  * The chat client program.
- * Type 'logout' to terminte the program.
+ * Type '/logout' to terminte the program.
  *
  * @author Stuart Rodenbeck
  */

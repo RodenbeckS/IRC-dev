@@ -37,15 +37,21 @@ public class ClientThread extends Thread {
  
             do {
                 clientMessage = reader.readLine();
-                serverMessage = "[" + userName + "]: " + clientMessage;
-                server.broadcast(serverMessage, this);
+                if(clientMessage.startsWith("/")){
+                    parseMessage(clientMessage.substring(1));
+                }
+                else{
+                    serverMessage = "[" + userName + "]: " + clientMessage;
+                    server.broadcast(serverMessage, this);
+                }
+                
  
-            } while (!clientMessage.equals("bye"));
+            } while (!clientMessage.equals("/logout"));
  
             server.removeUser(userName, this);
             socket.close();
  
-            serverMessage = userName + " has quitted.";
+            serverMessage = userName + " has quit.";
             server.broadcast(serverMessage, this);
  
         } catch (IOException ex) {
@@ -64,6 +70,39 @@ public class ClientThread extends Thread {
             writer.println("No other users connected");
         }
     }
+
+
+    void parseMessage(String message){
+        String[] args = message.split("\s");
+        if(args.length == 0){
+            sendMessage("Invalid arguments.");
+        }
+        switch(args[0]){
+            case("help"):
+                //print message list
+                break;
+            case("create"):
+                //new group
+                break;
+            case("remove"):
+                //remove group
+                break;
+            case("join"):
+                //join group
+                break;
+            case("leave"):
+                //leave group
+                break;
+            case("gm"):
+                //group message
+                break;
+            default:
+                sendMessage("Invalid command.");
+        }
+        return;
+    }
+
+    
  
     /**
      * Sends a message to the client.

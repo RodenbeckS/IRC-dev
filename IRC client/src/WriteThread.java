@@ -4,7 +4,7 @@ import java.net.*;
 /**
  * This thread is responsible for reading user's input and send it
  * to the server.
- * It runs in an infinite loop until the user types 'logout' to quit.
+ * It runs in an infinite loop until the user types '/logout' to quit.
  *
  * @author Stuart Rodenbeck
  */
@@ -41,7 +41,7 @@ public class WriteThread extends Thread {
             text = console.readLine("[" + userName + "]: ");
             writer.println(text);
  
-        } while (!text.equals("logout"));
+        } while (!text.equals("/logout"));
  
         try {
             socket.close();
