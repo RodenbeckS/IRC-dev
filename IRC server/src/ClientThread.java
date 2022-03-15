@@ -123,7 +123,7 @@ public class ClientThread extends Thread {
                 }
                 String serverMessage = "";
                 for(int i = 1; i<args.length; i++){
-                    serverMessage.concat(args[i] + " ");
+                    serverMessage = serverMessage.concat(args[i] + " ");
                 }
                 server.groupMessage(serverMessage, args[1], this);
                 break;

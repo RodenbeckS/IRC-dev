@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+
  
 /**
  * The chat server.
@@ -196,7 +198,7 @@ class Group {
     String listUsers(){
         String result = "";
         for(ClientThread aUser : members){
-            result = result.concat(aUser.username + " ");
+            result = result.concat(aUser.username + ", ");
         }
         return result;
     }
