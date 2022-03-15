@@ -66,7 +66,7 @@ public class Server {
 
     private Group getGroup(String group){
         for (Group aGroup : groups){
-            if(aGroup.name == group){
+            if(aGroup.name.equals(group)){
                 return aGroup;
             }
         }
@@ -78,6 +78,7 @@ public class Server {
      */
     void makeGroup(String group, ClientThread user){
         this.groups.add(new Group(group, user));
+        System.out.println(group + " added to Groups.");
     }
 
     /**
@@ -86,7 +87,7 @@ public class Server {
     void joinGroup(String group, ClientThread user){
         Group target = getGroup(group);
         if(target == null){
-            user.sendMessage("Group does not exist.");
+            user.sendSystemMessage("Group does not exist.");
             return;
         }
         target.members.add(user);
@@ -98,7 +99,7 @@ public class Server {
     void leaveGroup(String group, ClientThread user){
         Group target = getGroup(group);
         if(target == null){
-            user.sendMessage("Group does not exist.");
+            user.sendSystemMessage("Group does not exist.");
             return;
         }
         target.members.remove(user);
@@ -110,7 +111,7 @@ public class Server {
     void removeGroup(String group, ClientThread user){
         Group target = getGroup(group);
         if(target == null){
-            user.sendMessage("Group does not exist.");
+            user.sendSystemMessage("Group does not exist.");
             return;
         }
         groups.remove(target);
@@ -121,7 +122,7 @@ public class Server {
     void groupMessage(String message, String group, ClientThread excludeUser) {
         Group target = getGroup(group);
         if(target == null){
-            excludeUser.sendMessage("Group does not exist.");
+            excludeUser.sendSystemMessage("Group does not exist.");
             return;
         }
         for(ClientThread aUser : target.members){
@@ -137,13 +138,19 @@ public class Server {
      */
     void listGroups(ClientThread user){
         if(groups.isEmpty()){
-            user.sendMessage("No groups available.");
+            user.sendSystemMessage("No groups available.");
         }
         String grouplist = "";
         for(Group aGroup : groups){
-            grouplist.concat(aGroup.name + ", ");
+            grouplist = grouplist.concat(aGroup.name + ", ");
+            System.out.println(aGroup.name);
         }
         user.sendMessage(grouplist);
+    }
+
+    void listGroupMembers(String group, ClientThread user){
+        Group target = getGroup(group);
+        user.sendSystemMessage(target.listUsers());
     }
 
     /**
@@ -184,5 +191,13 @@ class Group {
     Group(String name, ClientThread user){
         this.name = name;
         this.members.add(user);
+    }
+
+    String listUsers(){
+        String result = "";
+        for(ClientThread aUser : members){
+            result = result.concat(aUser.username + " ");
+        }
+        return result;
     }
 }

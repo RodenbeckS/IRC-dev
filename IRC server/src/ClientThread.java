@@ -11,6 +11,7 @@ public class ClientThread extends Thread {
     private Socket socket;
     private Server server;
     private PrintWriter writer;
+    protected String username;
  
     public ClientThread(Socket socket, Server server) {
         this.socket = socket;
@@ -29,6 +30,7 @@ public class ClientThread extends Thread {
  
             String userName = reader.readLine();
             server.addUserName(userName);
+            this.username = userName;
  
             String serverMessage = "New user connected: " + userName;
             server.broadcast(serverMessage, this);
@@ -38,6 +40,7 @@ public class ClientThread extends Thread {
             do {
                 clientMessage = reader.readLine();
                 if(clientMessage.startsWith("/")){
+                    System.out.println("Command: " + clientMessage.substring(1));
                     parseMessage(clientMessage.substring(1));
                 }
                 else{
@@ -75,50 +78,74 @@ public class ClientThread extends Thread {
     void parseMessage(String message){
         String[] args = message.split("\s");
         if(args.length == 0){
-            sendMessage("Invalid arguments.");
+            sendSystemMessage("Invalid arguments.");
         }
         switch(args[0]){
             case("help"):
                 printHelp();
                 break;
             case("create"):
-                server.makeGroup(args[0], this);
+                if(args.length < 2){
+                    sendSystemMessage("Insufficient arguments");
+                    return;
+                }
+                server.makeGroup(args[1], this);
                 break;
             case("remove"):
-                server.removeGroup(args[0], this);
+                if(args.length < 2){
+                    sendSystemMessage("Insufficient arguments");
+                    return;
+                }
+                server.removeGroup(args[1], this);
                 break;
             case("join"):
-                server.joinGroup(args[0], this);
+                if(args.length < 2){
+                    sendSystemMessage("Insufficient arguments");
+                    return;
+                }
+                server.joinGroup(args[1], this);
                 break;
             case("leave"):
-                server.leaveGroup(args[0], this);
+                if(args.length < 2){
+                    sendSystemMessage("Insufficient arguments");
+                    return;
+                }
+                server.leaveGroup(args[1], this);
                 break;
             case("lg"):
                 server.listGroups(this);
                 break;
             case("gm"):
                 //group message
-                if(args.length < 2){
-                    sendMessage("Insufficient arguments");
+                if(args.length < 3){
+                    sendSystemMessage("Insufficient arguments");
                     return;
                 }
                 String serverMessage = "";
                 for(int i = 1; i<args.length; i++){
                     serverMessage.concat(args[i] + " ");
                 }
-                server.groupMessage(serverMessage, args[0], this);
+                server.groupMessage(serverMessage, args[1], this);
+                break;
+            case("lm"):
+                //list group members
+                if(args.length < 2){
+                    sendSystemMessage("Insufficient arguments");
+                    return;
+                }
+                server.listGroupMembers(args[1], this);
                 break;
             default:
-                sendMessage("Invalid command.");
+                sendSystemMessage("Invalid command.");
         }
         return;
     }
 
     void printHelp(){
-        sendMessage("/create ___ create a new group. /join ___ to join an existing group.");
-        sendMessage("/leave ___ to leave a group. /remove ___ to delete a group.");
-        sendMessage("/lg to list all groups. /gm ___ followed by a message to send that message to the specified group.");
-        sendMessage("/logout to exit.");
+        sendSystemMessage("Type /create ___ to create a new group. /join ___ to join an existing group.");
+        sendSystemMessage("Type /leave ___ to leave a group. /remove ___ to delete a group.");
+        sendSystemMessage("Type /lg to list all groups. /gm ___ followed by a message to send that message to the specified group.");
+        sendSystemMessage("Type /lm ___ to list members of a group. /logout to exit.");
     }
 
     
@@ -129,4 +156,12 @@ public class ClientThread extends Thread {
     void sendMessage(String message) {
         writer.println(message);
     }
+
+    /**
+     * Sends a message prepended with the system flag.
+     */
+    void sendSystemMessage(String message) {
+        writer.println("/" + message);
+    }
+
 }
