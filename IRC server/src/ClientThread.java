@@ -79,27 +79,46 @@ public class ClientThread extends Thread {
         }
         switch(args[0]){
             case("help"):
-                //print message list
+                printHelp();
                 break;
             case("create"):
-                //new group
+                server.makeGroup(args[0], this);
                 break;
             case("remove"):
-                //remove group
+                server.removeGroup(args[0], this);
                 break;
             case("join"):
-                //join group
+                server.joinGroup(args[0], this);
                 break;
             case("leave"):
-                //leave group
+                server.leaveGroup(args[0], this);
+                break;
+            case("lg"):
+                server.listGroups(this);
                 break;
             case("gm"):
                 //group message
+                if(args.length < 2){
+                    sendMessage("Insufficient arguments");
+                    return;
+                }
+                String serverMessage = "";
+                for(int i = 1; i<args.length; i++){
+                    serverMessage.concat(args[i] + " ");
+                }
+                server.groupMessage(serverMessage, args[0], this);
                 break;
             default:
                 sendMessage("Invalid command.");
         }
         return;
+    }
+
+    void printHelp(){
+        sendMessage("/create ___ create a new group. /join ___ to join an existing group.");
+        sendMessage("/leave ___ to leave a group. /remove ___ to delete a group.");
+        sendMessage("/lg to list all groups. /gm ___ followed by a message to send that message to the specified group.");
+        sendMessage("/logout to exit.");
     }
 
     

@@ -130,7 +130,22 @@ public class Server {
             }
         }
     }
- 
+
+    /**
+     * Sends a list of all current groups to the selected user.
+     * @param user
+     */
+    void listGroups(ClientThread user){
+        if(groups.isEmpty()){
+            user.sendMessage("No groups available.");
+        }
+        String grouplist = "";
+        for(Group aGroup : groups){
+            grouplist.concat(aGroup.name + ", ");
+        }
+        user.sendMessage(grouplist);
+    }
+
     /**
      * Stores username of the newly connected client.
      */
